@@ -18,7 +18,7 @@ const index = () => {
             <Text style={styles.buttonText}><Link href="/signup">Create an account</Link></Text>
           </View>
           <View style={styles.buttonContainer}>
-            <Text style={styles.buttonText}>Log In</Text>
+            <Text style={styles.buttonText}><Link href="/login">Log In</Link></Text>
           </View>
         </View>
         

@@ -14,7 +14,7 @@ const index = () => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.contentContainer}>
-        <Text style={styles.title}>Sign up with your email or phone number</Text>
+        <Text style={styles.title}>Sign up with your email</Text>
         <TextInput
           style={styles.input}
           placeholder="Name"
@@ -103,7 +103,7 @@ const styles = StyleSheet.create({
     paddingVertical: 32,
   },
   title: {
-    fontSize: 17,
+    fontSize: 20,
     fontWeight: 'bold',
     color: '#333333',
     marginBottom: 24,
