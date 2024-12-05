@@ -11,10 +11,6 @@ const index = () => {
   const [gender, setGender] = useState('');
   const [isTermsAccepted, setIsTermsAccepted] = useState(false);
 
-  const toggleTermsAcceptance = () => {
-    setIsTermsAccepted(!isTermsAccepted);
-  };
-
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.contentContainer}>
