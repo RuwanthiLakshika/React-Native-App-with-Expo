@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import carImage from '../assets/car.jpg';
+import { Link } from 'expo-router';
 
 const index = () => {
   return (
@@ -14,7 +15,7 @@ const index = () => {
           <Image source={carImage} style={{ width: 350, height: 350 }} />
         </View>
           <View style={styles.buttonContainer}>
-            <Text style={styles.buttonText}>Create an account</Text>
+            <Text style={styles.buttonText}><Link href="/signup">Create an account</Link></Text>
           </View>
           <View style={styles.buttonContainer}>
             <Text style={styles.buttonText}>Log In</Text>
