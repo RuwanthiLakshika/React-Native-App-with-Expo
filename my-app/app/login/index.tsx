@@ -1,17 +1,58 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Pressable } from 'react-native';
-import { Picker } from '@react-native-picker/picker';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Ionicons } from '@expo/vector-icons';
+import { Alert } from 'react-native';
+import { Link } from 'expo-router';
 
+const USERS = [
+  { email: 'ruwanthi@gmail.com', password: 'ruwa123', name: 'ruwanthi' },
+];
 const index = () => {
   const [password, setPassword] = useState('');
   const [email, setEmail] = useState('');
 
+  const loginImage = require('../../assets/loginImage.jpg');
+
+    const validateEmail = (email: string): boolean => {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return emailRegex.test(email);
+    };
+  
+    const handleLogin = () => {
+      if (!email || !password) {
+        Alert.alert('Error', 'Please fill in both fields.');
+        return;
+      }
+  
+      if (!validateEmail(email)) {
+        Alert.alert('Error', 'Please enter a valid email address.');
+        return;
+      }
+  
+      const user = USERS.find((u) => u.email === email && u.password === password);
+  
+      if (user) {
+        Alert.alert('Success', 'Login Successful', [
+          {
+            text: 'OK',
+            onPress: () => {
+              Alert.alert('Welcome', `Hello, ${user.name}!`);
+            },
+          },
+        ]);
+      } else {
+        Alert.alert('Error', 'Invalid email or password.');
+      }
+    }
+  
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.contentContainer}>
-        <Text style={styles.title}>Sign in with your email</Text>
+      <Text style={styles.title}>Sign in with your email</Text>
+      <View style={styles.rightContainer}>
+          <Image source={loginImage} style={{ width: 350, height: 350 }} />
+        </View>
         <TextInput
           style={styles.input}
           placeholder="Enter your Email"
@@ -26,27 +67,13 @@ const index = () => {
           onChangeText={setPassword}
         />
         
-        <TouchableOpacity style={styles.signUpButton}>
+        <TouchableOpacity style={styles.signUpButton} onPress={handleLogin}>
           <Text style={styles.signUpButtonText}>Sign Up</Text>
         </TouchableOpacity>
-        <View style={styles.socialSignUpContainer}>
-          <TouchableOpacity style={styles.socialSignUpButton}>
-            <Image source={require('../../assets/gmail.png')} style={styles.socialSignUpIcon} />
-            <Text style={styles.socialSignUpText}>Sign up with Gmail</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.socialSignUpButton}>
-            <Image source={require('../../assets/facebook.png')} style={styles.socialSignUpIcon} />
-            <Text style={styles.socialSignUpText}>Sign up with Facebook</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.socialSignUpButton}>
-            <Image source={require('../../assets/apple.png')} style={styles.socialSignUpIcon} />
-            <Text style={styles.socialSignUpText}>Sign up with Apple</Text>
-          </TouchableOpacity>
-        </View>
         <View style={styles.signInContainer}>
           <Text style={styles.signInText}>Don't have an account?</Text>
           <TouchableOpacity>
-            <Text style={[styles.signInText, styles.linkText]}>Sign up</Text>
+            <Text style={[styles.signInText, styles.linkText]}><Link href="/signup">Sign up</Link></Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -94,30 +121,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
   },
-  socialSignUpContainer: {
-    marginTop: 15,
-    marginBottom: 24,
-  },
-  socialSignUpButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#FFFFFF',
-    borderWidth: 1,
-    borderColor: '#CCCCCC',
-    borderRadius: 8,
-    paddingVertical: 12,
-    marginBottom: 12,
-  },
-  socialSignUpIcon: {
-    width: 24,
-    height: 24,
-    marginRight: 8,
-  },
-  socialSignUpText: {
-    fontSize: 16,
-    color: '#333333',
-  },
   signInContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
@@ -127,6 +130,11 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#666666',
     marginRight: 4,
+  },
+  rightContainer: {
+    marginTop: 10,
+    alignItems: 'center',
+    marginBottom: 20,
   },
 });
 
