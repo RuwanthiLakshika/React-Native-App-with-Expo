@@ -11,6 +11,8 @@ const index = () => {
   const [password, setPassword] = useState('');
   const [email, setEmail] = useState('');
 
+  const loginImage = require('../../assets/loginImage.jpg');
+
     const validateEmail = (email: string): boolean => {
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       return emailRegex.test(email);
@@ -47,7 +49,10 @@ const index = () => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.contentContainer}>
-        <Text style={styles.title}>Sign in with your email</Text>
+      <Text style={styles.title}>Sign in with your email</Text>
+      <View style={styles.rightContainer}>
+          <Image source={loginImage} style={{ width: 350, height: 350 }} />
+        </View>
         <TextInput
           style={styles.input}
           placeholder="Enter your Email"
@@ -125,6 +130,11 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#666666',
     marginRight: 4,
+  },
+  rightContainer: {
+    marginTop: 10,
+    alignItems: 'center',
+    marginBottom: 20,
   },
 });
 
