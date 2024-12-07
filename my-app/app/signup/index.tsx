@@ -3,6 +3,18 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Pressable }
 import { Picker } from '@react-native-picker/picker';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import { Alert } from 'react-native';
+import { Link, useRouter } from 'expo-router';
+
+// Simulated user database (in a real app, this would be a backend service)
+const USERS = [
+  {
+    email: 'ruwanthi@gmail.com',
+    name: 'ruwanthi',
+    phoneNumber: '+94762193316',
+    gender: 'female'
+  }
+];
 
 const index = () => {
   const [name, setName] = useState('');
@@ -10,6 +22,42 @@ const index = () => {
   const [phoneNumber, setPhoneNumber] = useState('+94');
   const [gender, setGender] = useState('');
   const [isTermsAccepted, setIsTermsAccepted] = useState(false);
+
+  const router = useRouter();
+
+  const handleSignup = () => {
+    // Basic validation
+    if (!name || !email || !phoneNumber || !gender) {
+      Alert.alert('Error', 'Please fill in all fields');
+      return;
+    }
+
+    if (!isTermsAccepted) {
+      Alert.alert('Error', 'Please accept Terms of Service');
+      return;
+    }
+
+    // Check if email already exists
+    const existingUser = USERS.find(user => user.email === email);
+    if (existingUser) {
+      Alert.alert('Error', 'Email already registered');
+      return;
+    }
+
+    // Create new user
+    const newUser = {
+      name,
+      email,
+      phoneNumber,
+      gender
+    };
+
+    // In a real app, this would be an API call to register the user
+    USERS.push(newUser);
+    Alert.alert('Success', 'Account created successfully', [
+      { text: 'OK', onPress: () => router.push('/login') }
+    ]);
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -66,7 +114,7 @@ const index = () => {
           </Text>
         </View>
         <TouchableOpacity style={styles.signUpButton}>
-          <Text style={styles.signUpButtonText}>Sign Up</Text>
+          <Text style={styles.signUpButtonText} onPress={handleSignup}>Sign Up</Text>
         </TouchableOpacity>
         <View style={styles.socialSignUpContainer}>
           <TouchableOpacity style={styles.socialSignUpButton}>
