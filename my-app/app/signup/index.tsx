@@ -6,10 +6,10 @@ import { Ionicons } from '@expo/vector-icons';
 import { Alert } from 'react-native';
 import { Link, useRouter } from 'expo-router';
 
-// Simulated user database (in a real app, this would be a backend service)
 const USERS = [
   {
     email: 'ruwanthi@gmail.com',
+    password: 'ruwa123',
     name: 'ruwanthi',
     phoneNumber: '+94762193316',
     gender: 'female'
@@ -19,16 +19,51 @@ const USERS = [
 const index = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('+94');
   const [gender, setGender] = useState('');
   const [isTermsAccepted, setIsTermsAccepted] = useState(false);
 
   const router = useRouter();
 
+  const validateEmail = (email: string): boolean => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  const validatePhoneNumber = (number: string): boolean => {
+    const phoneRegex = /^\+94\d{9}$/;
+    return phoneRegex.test(number);
+  };
+
   const handleSignup = () => {
-    // Basic validation
-    if (!name || !email || !phoneNumber || !gender) {
-      Alert.alert('Error', 'Please fill in all fields');
+    if (!name.trim()) {
+      Alert.alert('Error', 'Name cannot be empty');
+      return;
+    }
+
+    if (!email.trim() || !validateEmail(email)) {
+      Alert.alert('Error', 'Enter a valid email address');
+      return;
+    }
+
+    if (!password.trim()) {
+      Alert.alert('Error', 'Password cannot be empty');
+      return;
+    }
+
+    if (!phoneNumber.trim() || !validatePhoneNumber(phoneNumber)) {
+      Alert.alert('Error', 'Enter a valid phone number');
+      return;
+    }
+
+    if (!gender) {
+      Alert.alert('Error', 'Please select a gender');
+      return;
+    }
+
+    if (!password || password.length < 6) {
+      Alert.alert('Error', 'Password must be at least 6 characters long');
       return;
     }
 
@@ -37,22 +72,15 @@ const index = () => {
       return;
     }
 
-    // Check if email already exists
-    const existingUser = USERS.find(user => user.email === email);
-    if (existingUser) {
-      Alert.alert('Error', 'Email already registered');
-      return;
-    }
-
     // Create new user
     const newUser = {
       name,
       email,
+      password,
       phoneNumber,
       gender
     };
 
-    // In a real app, this would be an API call to register the user
     USERS.push(newUser);
     Alert.alert('Success', 'Account created successfully', [
       { text: 'OK', onPress: () => router.push('/login') }
@@ -75,6 +103,13 @@ const index = () => {
           keyboardType="email-address"
           value={email}
           onChangeText={setEmail}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Password"
+          secureTextEntry
+          value={password}
+          onChangeText={setPassword}
         />
         <View style={styles.phoneNumberContainer}>
           <TouchableOpacity style={styles.countryCodeButton}>
@@ -116,24 +151,10 @@ const index = () => {
         <TouchableOpacity style={styles.signUpButton}>
           <Text style={styles.signUpButtonText} onPress={handleSignup}>Sign Up</Text>
         </TouchableOpacity>
-        <View style={styles.socialSignUpContainer}>
-          <TouchableOpacity style={styles.socialSignUpButton}>
-            <Image source={require('../../assets/gmail.png')} style={styles.socialSignUpIcon} />
-            <Text style={styles.socialSignUpText}>Sign up with Gmail</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.socialSignUpButton}>
-            <Image source={require('../../assets/facebook.png')} style={styles.socialSignUpIcon} />
-            <Text style={styles.socialSignUpText}>Sign up with Facebook</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.socialSignUpButton}>
-            <Image source={require('../../assets/apple.png')} style={styles.socialSignUpIcon} />
-            <Text style={styles.socialSignUpText}>Sign up with Apple</Text>
-          </TouchableOpacity>
-        </View>
         <View style={styles.signInContainer}>
           <Text style={styles.signInText}>Already have an account?</Text>
           <TouchableOpacity>
-            <Text style={[styles.signInText, styles.linkText]}>Sign in</Text>
+            <Text style={[styles.signInText, styles.linkText]}><Link href="/login">Sign in</Link></Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -157,6 +178,7 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   input: {
+    marginTop: 8,
     height: 48,
     borderWidth: 1,
     borderColor: '#CCCCCC',
@@ -204,6 +226,7 @@ const styles = StyleSheet.create({
     height: 50,
   },
   termsContainer: {
+    marginTop: 20,
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 24,
@@ -246,6 +269,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   signUpButton: {
+    marginTop: 30,
     backgroundColor: '#0077B6',
     paddingVertical: 16,
     borderRadius: 8,
