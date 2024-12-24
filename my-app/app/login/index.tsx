@@ -1,56 +1,61 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Alert } from 'react-native';
-import { Link } from 'expo-router';
+import { useRouter, Link } from 'expo-router';
 
 const USERS = [
   { email: 'ruwanthi@gmail.com', password: 'ruwa123', name: 'ruwanthi' },
 ];
+
 const index = () => {
   const [password, setPassword] = useState('');
   const [email, setEmail] = useState('');
+  const router = useRouter(); // Use the useRouter hook
 
   const loginImage = require('../../assets/loginImage.jpg');
 
-    const validateEmail = (email: string): boolean => {
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      return emailRegex.test(email);
-    };
-  
-    const handleLogin = () => {
-      if (!email || !password) {
-        Alert.alert('Error', 'Please fill in both fields.');
-        return;
-      }
-  
-      if (!validateEmail(email)) {
-        Alert.alert('Error', 'Please enter a valid email address.');
-        return;
-      }
-  
-      const user = USERS.find((u) => u.email === email && u.password === password);
-  
-      if (user) {
-        Alert.alert('Success', 'Login Successful', [
-          {
-            text: 'OK',
-            onPress: () => {
-              Alert.alert('Welcome', `Hello, ${user.name}!`);
-            },
-          },
-        ]);
-      } else {
-        Alert.alert('Error', 'Invalid email or password.');
-      }
+  const validateEmail = (email: string): boolean => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  const handleLogin = () => {
+    if (!email || !password) {
+      Alert.alert('Error', 'Please fill in both fields.');
+      return;
     }
-  
+
+    if (!validateEmail(email)) {
+      Alert.alert('Error', 'Please enter a valid email address.');
+      return;
+    }
+
+    const user = USERS.find((u) => u.email === email && u.password === password);
+
+    if (user) {
+      Alert.alert('Success', 'Login Successful', [
+        {
+          text: 'OK',
+          onPress: () => {
+            Alert.alert('Welcome', `Hello, ${user.name}!`, [
+              {
+                text: 'Go to Home',
+                onPress: () => router.push('/home'), 
+              },
+            ]);
+          },
+        },
+      ]);
+    } else {
+      Alert.alert('Error', 'Invalid email or password.');
+    }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.contentContainer}>
-      <Text style={styles.title}>Sign in with your email</Text>
-      <View style={styles.rightContainer}>
+        <Text style={styles.title}>Sign in with your email</Text>
+        <View style={styles.rightContainer}>
           <Image source={loginImage} style={{ width: 350, height: 350 }} />
         </View>
         <TextInput
@@ -66,14 +71,16 @@ const index = () => {
           value={password}
           onChangeText={setPassword}
         />
-        
+
         <TouchableOpacity style={styles.signUpButton} onPress={handleLogin}>
           <Text style={styles.signUpButtonText}>Sign Up</Text>
         </TouchableOpacity>
         <View style={styles.signInContainer}>
           <Text style={styles.signInText}>Don't have an account?</Text>
           <TouchableOpacity>
-            <Text style={[styles.signInText, styles.linkText]}><Link href="/signup">Sign up</Link></Text>
+            <Text style={[styles.signInText, styles.linkText]}>
+              <Link href="/signup">Sign up</Link>
+            </Text>
           </TouchableOpacity>
         </View>
       </View>
