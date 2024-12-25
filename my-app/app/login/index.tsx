@@ -10,7 +10,7 @@ const USERS = [
 const index = () => {
   const [password, setPassword] = useState('');
   const [email, setEmail] = useState('');
-  const router = useRouter(); // Use the useRouter hook
+  const router = useRouter(); 
 
   const loginImage = require('../../assets/loginImage.jpg');
 
