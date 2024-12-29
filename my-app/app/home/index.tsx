@@ -1,6 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, ScrollView, TouchableOpacity, SafeAreaView } from 'react-native';
+import React, { useState, useEffect, useContext } from 'react';
+import { View, Text, TextInput, ScrollView, TouchableOpacity, SafeAreaView, StyleSheet } from 'react-native';
 import { Feather } from '@expo/vector-icons';
+import { useRouter, useLocalSearchParams } from 'expo-router';
+import { ClickCountContext } from '../ClickCountContext';
 
 export default function ListingApp() {
   interface Location {
@@ -14,8 +16,12 @@ export default function ListingApp() {
     };
   }
 
+  const { clickCount, setClickCount } = useContext(ClickCountContext);
   const [locations, setLocations] = useState<Location[]>([]);
   const [loading, setLoading] = useState(true);
+  const searchParams = useLocalSearchParams(); 
+  const name = searchParams.name;
+  
 
   useEffect(() => {
     fetchLocations('südkreuz');
@@ -41,45 +47,53 @@ export default function ListingApp() {
     }
   };
 
+  const handleItemClick = () => {
+    setClickCount(clickCount + 1);
+  };
+
   if (loading) {
     return (
-      <View className="flex-1 justify-center items-center">
+      <View style={styles.centered}>
         <Text>Loading...</Text>
       </View>
     );
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
-      <ScrollView className="flex-1 px-4">
-        <Text className="text-4xl font-bold mb-6">Browse Stations</Text>
-        
-        <View className="relative mb-8">
-          <View className="absolute z-10 top-3 left-4">
+    <SafeAreaView style={styles.container}>
+      <View style={styles.topBar}>
+        <Text style={styles.greetingText}>Welcome, {name || 'Guest'}!</Text>
+      </View>
+
+      <ScrollView style={styles.scrollView}>
+        <Text style={styles.title}>Browse Stations</Text>
+
+        <View style={styles.searchContainer}>
+          <View style={styles.searchIcon}>
             <Feather name="search" size={20} color="#9ca3af" />
           </View>
-          <TextInput 
+          <TextInput
             onChangeText={handleSearch}
             placeholder="Search stations..."
-            className="w-full p-3 pl-12 bg-gray-50 rounded-lg"
+            style={styles.searchInput}
           />
         </View>
 
-        <View className="mb-8">
-          <View className="flex-row justify-between items-center mb-4">
-            <Text className="text-2xl font-semibold text-gray-700">Available Stations</Text>
+        <View>
+          <View style={styles.header}>
+            <Text style={styles.subtitle}>Available Stations</Text>
             <TouchableOpacity>
-              <Text className="text-blue-600 font-medium">View All</Text>
+              <Text style={styles.viewAll}>View All</Text>
             </TouchableOpacity>
           </View>
 
           {locations.map((location) => (
-            <View key={location.id} className="bg-blue-600 rounded-xl p-4 mb-4">
+            <View key={location.id} style={styles.card}>
               <View>
-                <Text className="text-2xl font-bold text-white">{location.name}</Text>
-                <Text className="text-lg text-white">Type: {location.type}</Text>
+                <Text style={styles.cardTitle}>{location.name}</Text>
+                <Text style={styles.cardSubtitle}>Type: {location.type}</Text>
                 {location.products && (
-                  <Text className="text-white mt-2">
+                  <Text style={styles.cardText}>
                     Available Services: {Object.entries(location.products)
                       .filter(([_, value]) => value)
                       .map(([key]) => key)
@@ -88,12 +102,13 @@ export default function ListingApp() {
                 )}
               </View>
 
-              <View className="flex-row justify-between items-center mt-4">
-                <Text className="text-white">
-                  {location.location && `${location.location.latitude}, ${location.location.longitude}`}
+              <View style={styles.cardFooter}>
+                <Text style={styles.cardText}>
+                  {location.location &&
+                    `${location.location.latitude}, ${location.location.longitude}`}
                 </Text>
-                <TouchableOpacity className="bg-gray-800 px-4 py-2 rounded-lg">
-                  <Text className="text-white">View Details →</Text>
+                <TouchableOpacity style={styles.detailsButton} onPress={handleItemClick}>
+                  <Text style={styles.detailsButtonText}>Click Me</Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -101,15 +116,125 @@ export default function ListingApp() {
         </View>
       </ScrollView>
 
-      <View className="absolute bottom-0 left-0 right-0 bg-white border-t border-gray-200 py-2">
-        <View className="flex-row justify-between items-center px-4">
-          {['Home', 'Categories', 'Account', 'More'].map(item => (
-            <TouchableOpacity key={item} className="items-center">
-              <Text className={item === 'Home' ? 'text-blue-600' : 'text-gray-500'}>{item}</Text>
-            </TouchableOpacity>
-          ))}
-        </View>
-      </View>
+      {/* Floating Button */}
+      <TouchableOpacity style={styles.floatingButton}>
+        <Text style={styles.floatingButtonText}>{clickCount}</Text>
+      </TouchableOpacity>
     </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#ffffff',
+  },
+  topBar: {
+    backgroundColor: '#1d4ed8',
+    paddingVertical: 16,
+    paddingHorizontal: 16,
+  },
+  greetingText: {
+    color: '#ffffff',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  scrollView: {
+    paddingHorizontal: 16,
+  },
+  title: {
+    fontSize: 32,
+    fontWeight: 'bold',
+    marginBottom: 16,
+  },
+  searchContainer: {
+    position: 'relative',
+    marginBottom: 16,
+  },
+  searchIcon: {
+    position: 'absolute',
+    zIndex: 10,
+    top: 10,
+    left: 12,
+  },
+  searchInput: {
+    width: '100%',
+    padding: 12,
+    paddingLeft: 40,
+    backgroundColor: '#f3f4f6',
+    borderRadius: 8,
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  subtitle: {
+    fontSize: 24,
+    fontWeight: '600',
+  },
+  viewAll: {
+    color: '#1d4ed8',
+    fontWeight: '500',
+  },
+  card: {
+    backgroundColor: '#2563eb',
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 16,
+  },
+  cardTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#ffffff',
+  },
+  cardSubtitle: {
+    fontSize: 16,
+    color: '#ffffff',
+  },
+  cardText: {
+    color: '#ffffff',
+    marginTop: 8,
+  },
+  cardFooter: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: 16,
+  },
+  detailsButton: {
+    backgroundColor: '#1f2937',
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+  },
+  detailsButtonText: {
+    color: '#ffffff',
+  },
+  floatingButton: {
+    position: 'absolute',
+    bottom: 16,
+    right: 16,
+    backgroundColor: '#f4f6f9',
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 8,
+  },
+  floatingButtonText: {
+    color: '#090909',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  centered: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+});
