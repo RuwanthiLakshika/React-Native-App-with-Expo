@@ -7,10 +7,10 @@ const USERS = [
   { email: 'ruwanthi@gmail.com', password: 'ruwa123', name: 'ruwanthi' },
 ];
 
-const index = () => {
+const Login = () => {
   const [password, setPassword] = useState('');
   const [email, setEmail] = useState('');
-  const router = useRouter(); 
+  const router = useRouter();
 
   const loginImage = require('../../assets/loginImage.jpg');
 
@@ -36,14 +36,10 @@ const index = () => {
       Alert.alert('Success', 'Login Successful', [
         {
           text: 'OK',
-          onPress: () => {
-            Alert.alert('Welcome', `Hello, ${user.name}!`, [
-              {
-                text: 'Go to Home',
-                onPress: () => router.push('/home'), 
-              },
-            ]);
-          },
+          onPress: () =>router.push({
+            pathname: '/home',
+            params: { name: user.name },
+          }),
         },
       ]);
     } else {
@@ -67,21 +63,18 @@ const index = () => {
         <TextInput
           style={styles.input}
           placeholder="Enter Your Password"
-          keyboardType="visible-password"
+          secureTextEntry={true}
           value={password}
           onChangeText={setPassword}
         />
-
-        <TouchableOpacity style={styles.signUpButton} onPress={handleLogin}>
-          <Text style={styles.signUpButtonText}>Sign Up</Text>
+        <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
+          <Text style={styles.loginButtonText}>Login</Text>
         </TouchableOpacity>
         <View style={styles.signInContainer}>
           <Text style={styles.signInText}>Don't have an account?</Text>
-          <TouchableOpacity>
-            <Text style={[styles.signInText, styles.linkText]}>
-              <Link href="/signup">Sign up</Link>
-            </Text>
-          </TouchableOpacity>
+          <Link href="/signup" style={styles.linkText}>
+            Sign up
+          </Link>
         </View>
       </View>
     </SafeAreaView>
@@ -115,14 +108,14 @@ const styles = StyleSheet.create({
     color: '#0077B6',
     fontWeight: 'bold',
   },
-  signUpButton: {
+  loginButton: {
     marginTop: 30,
     backgroundColor: '#0077B6',
     paddingVertical: 16,
     borderRadius: 8,
     marginBottom: 24,
   },
-  signUpButtonText: {
+  loginButtonText: {
     color: '#FFFFFF',
     fontSize: 16,
     fontWeight: 'bold',
@@ -145,4 +138,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default index;
+export default Login;

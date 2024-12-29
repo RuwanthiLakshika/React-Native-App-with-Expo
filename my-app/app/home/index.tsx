@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { View, Text, TextInput, ScrollView, TouchableOpacity, SafeAreaView, StyleSheet } from 'react-native';
 import { Feather } from '@expo/vector-icons';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import { ClickCountContext } from '../ClickCountContext';
 
 export default function ListingApp() {
@@ -18,6 +19,9 @@ export default function ListingApp() {
   const { clickCount, setClickCount } = useContext(ClickCountContext);
   const [locations, setLocations] = useState<Location[]>([]);
   const [loading, setLoading] = useState(true);
+  const searchParams = useLocalSearchParams(); 
+  const name = searchParams.name;
+  
 
   useEffect(() => {
     fetchLocations('südkreuz');
@@ -56,16 +60,19 @@ export default function ListingApp() {
   }
 
   return (
-    
     <SafeAreaView style={styles.container}>
+      <View style={styles.topBar}>
+        <Text style={styles.greetingText}>Welcome, {name || 'Guest'}!</Text>
+      </View>
+
       <ScrollView style={styles.scrollView}>
         <Text style={styles.title}>Browse Stations</Text>
-        
+
         <View style={styles.searchContainer}>
           <View style={styles.searchIcon}>
             <Feather name="search" size={20} color="#9ca3af" />
           </View>
-          <TextInput 
+          <TextInput
             onChangeText={handleSearch}
             placeholder="Search stations..."
             style={styles.searchInput}
@@ -97,7 +104,8 @@ export default function ListingApp() {
 
               <View style={styles.cardFooter}>
                 <Text style={styles.cardText}>
-                  {location.location && `${location.location.latitude}, ${location.location.longitude}`}
+                  {location.location &&
+                    `${location.location.latitude}, ${location.location.longitude}`}
                 </Text>
                 <TouchableOpacity style={styles.detailsButton} onPress={handleItemClick}>
                   <Text style={styles.detailsButtonText}>Click Me</Text>
@@ -120,6 +128,16 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#ffffff',
+  },
+  topBar: {
+    backgroundColor: '#1d4ed8',
+    paddingVertical: 16,
+    paddingHorizontal: 16,
+  },
+  greetingText: {
+    color: '#ffffff',
+    fontSize: 18,
+    fontWeight: 'bold',
   },
   scrollView: {
     paddingHorizontal: 16,

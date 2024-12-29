@@ -1,27 +1,32 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Pressable } from 'react-native';
-import { Picker } from '@react-native-picker/picker';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { Ionicons } from '@expo/vector-icons';
-import { Alert } from 'react-native';
-import { Link, useRouter } from 'expo-router';
+import React, { useState, useContext } from "react";
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  Image,
+  Pressable,
+  Alert,
+} from "react-native";
+import { Picker } from "@react-native-picker/picker";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { Ionicons } from "@expo/vector-icons";
+import { Link, useRouter } from "expo-router";
+import { ClickCountContext } from "../ClickCountContext";
 
-const USERS = [
-  {
-    email: 'ruwanthi@gmail.com',
-    password: 'ruwa123',
-    name: 'ruwanthi',
-    phoneNumber: '+94762193316',
-    gender: 'female'
-  }
-];
+const Signup = () => {
+  const {
+    setIsAuthenticated,
+    setUserEmail,
+    setUserPassword,
+  } = useContext(ClickCountContext);
 
-const index = () => {
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [phoneNumber, setPhoneNumber] = useState('+94');
-  const [gender, setGender] = useState('');
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("+94");
+  const [gender, setGender] = useState("");
   const [isTermsAccepted, setIsTermsAccepted] = useState(false);
 
   const router = useRouter();
@@ -38,52 +43,42 @@ const index = () => {
 
   const handleSignup = () => {
     if (!name.trim()) {
-      Alert.alert('Error', 'Name cannot be empty');
+      Alert.alert("Error", "Name cannot be empty");
       return;
     }
 
     if (!email.trim() || !validateEmail(email)) {
-      Alert.alert('Error', 'Enter a valid email address');
-      return;
-    }
-
-    if (!password.trim()) {
-      Alert.alert('Error', 'Password cannot be empty');
-      return;
-    }
-
-    if (!phoneNumber.trim() || !validatePhoneNumber(phoneNumber)) {
-      Alert.alert('Error', 'Enter a valid phone number');
-      return;
-    }
-
-    if (!gender) {
-      Alert.alert('Error', 'Please select a gender');
+      Alert.alert("Error", "Enter a valid email address");
       return;
     }
 
     if (!password || password.length < 6) {
-      Alert.alert('Error', 'Password must be at least 6 characters long');
+      Alert.alert("Error", "Password must be at least 6 characters long");
+      return;
+    }
+
+    if (!phoneNumber.trim() || !validatePhoneNumber(phoneNumber)) {
+      Alert.alert("Error", "Enter a valid phone number");
+      return;
+    }
+
+    if (!gender) {
+      Alert.alert("Error", "Please select a gender");
       return;
     }
 
     if (!isTermsAccepted) {
-      Alert.alert('Error', 'Please accept Terms of Service');
+      Alert.alert("Error", "Please accept Terms of Service");
       return;
     }
 
-    // Create new user
-    const newUser = {
-      name,
-      email,
-      password,
-      phoneNumber,
-      gender
-    };
+    // Update the context with the new user information
+    setUserEmail(email);
+    setUserPassword(password);
+    setIsAuthenticated(true);
 
-    USERS.push(newUser);
-    Alert.alert('Success', 'Account created successfully', [
-      { text: 'OK', onPress: () => router.push('/login') }
+    Alert.alert("Success", "Account created successfully", [
+      { text: "OK", onPress: () => router.push("/login") },
     ]);
   };
 
@@ -113,7 +108,10 @@ const index = () => {
         />
         <View style={styles.phoneNumberContainer}>
           <TouchableOpacity style={styles.countryCodeButton}>
-            <Image source={require('../../assets/sri-lanka-flag.png')} style={styles.countryCodeIcon} />
+            <Image
+              source={require("../../assets/sri-lanka-flag.png")}
+              style={styles.countryCodeIcon}
+            />
             <Text style={styles.countryCode}>+94</Text>
           </TouchableOpacity>
           <TextInput
@@ -136,25 +134,34 @@ const index = () => {
           </Picker>
         </View>
         <View style={styles.termsContainer}>
-        <Pressable
-      role="checkbox"
-      aria-checked={isTermsAccepted}
-      style={[styles.checkboxBase, isTermsAccepted && styles.checkboxChecked]}
-      onPress={() => setIsTermsAccepted(!isTermsAccepted)}>
-      {isTermsAccepted && <Ionicons name="checkmark" size={24} color="white" />}
-    </Pressable>
+          <Pressable
+            role="checkbox"
+            aria-checked={isTermsAccepted}
+            style={[
+              styles.checkboxBase,
+              isTermsAccepted && styles.checkboxChecked,
+            ]}
+            onPress={() => setIsTermsAccepted(!isTermsAccepted)}
+          >
+            {isTermsAccepted && (
+              <Ionicons name="checkmark" size={24} color="white" />
+            )}
+          </Pressable>
           <Text style={styles.termsText}>
-            By signing up, you agree to the <Text style={styles.linkText}>Terms of service</Text> and{' '}
+            By signing up, you agree to the{" "}
+            <Text style={styles.linkText}>Terms of service</Text> and{" "}
             <Text style={styles.linkText}>Privacy policy</Text>.
           </Text>
         </View>
-        <TouchableOpacity style={styles.signUpButton}>
-          <Text style={styles.signUpButtonText} onPress={handleSignup}>Sign Up</Text>
+        <TouchableOpacity style={styles.signUpButton} onPress={handleSignup}>
+          <Text style={styles.signUpButtonText}>Sign Up</Text>
         </TouchableOpacity>
         <View style={styles.signInContainer}>
           <Text style={styles.signInText}>Already have an account?</Text>
           <TouchableOpacity>
-            <Text style={[styles.signInText, styles.linkText]}><Link href="/login">Sign in</Link></Text>
+            <Text style={[styles.signInText, styles.linkText]}>
+              <Link href="/login">Sign in</Link>
+            </Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -316,4 +323,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default index;
+export default Signup;
